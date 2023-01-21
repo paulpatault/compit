@@ -10,8 +10,13 @@ local function file_exists(name)
    end
 end
 
+local function get_file()
+  local b = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+  return vim.fs.normalize('$XDG_CONFIG_HOME/nvim/compit_cache/compit_cache_' .. b);
+end
+
 local function get_command()
-    local file = vim.fs.normalize('$XDG_CONFIG_HOME/nvim/compit_cache');
+    local file = get_file();
     local command = "make"
     if file_exists(file) then
         local file_obj = io.open(file, "r")
@@ -28,7 +33,7 @@ local function get_command()
 end
 
 local function set_command(command)
-    local file = vim.fs.normalize('$XDG_CONFIG_HOME/nvim/compit_cache');
+    local file = get_file();
     local file_obj = io.open(file, "w")
     io.output(file_obj)
     io.write(command)
@@ -37,7 +42,7 @@ end
 
 local function run_with_prompt()
     local command = get_command()
-    vim.ui.input({ prompt = "Build Command: ", default = command }, function(input)
+    vim.ui.input({ prompt = "Command: ", default = command }, function(input)
         if input == nil then
             return
         end
@@ -45,8 +50,8 @@ local function run_with_prompt()
             command = input
             set_command(command)
         end
-        vim.cmd('vsplit | terminal ' .. command)
-        vim.cmd('startinsert')
+        vim.opt.makeprg = command
+        vim.cmd.make()
     end)
 end
 
@@ -54,8 +59,8 @@ M.run = function(options)
     if options.prompt ~= nil then
         if options.prompt == false then
             local command = get_command()
-            vim.cmd('vsplit | terminal ' .. command)
-            vim.cmd('startinsert')
+            vim.opt.makeprg = command
+            vim.cmd.make()
         else
             run_with_prompt()
         end
@@ -63,5 +68,6 @@ M.run = function(options)
         run_with_prompt()
     end
 end
+
 
 return M
