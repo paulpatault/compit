@@ -1,4 +1,4 @@
-Mcompit = {}
+local M = {}
 
 local function file_exists(name)
    local f = io.open(name,"r")
@@ -12,6 +12,8 @@ end
 
 local path = '$HOME/.local/share/nvim/compit_cache/'
 
+local user_table = {}
+
 local function get_file()
   local b = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
   return vim.fs.normalize(path .. b);
@@ -20,8 +22,10 @@ end
 local function get_command()
     local file = get_file();
     local e = vim.fn.fnamemodify(file, ":e")
-    if e == "mlw" or e == "coma" then
-      return "why3 ide %"
+    for k, v in pairs(user_table) do
+      if k == e then
+        return v
+      end
     end
     local command = "make -j4"
     if file_exists(file) then
@@ -64,7 +68,7 @@ local function run_with_prompt()
     end)
 end
 
-Mcompit.run = function(options)
+local function run(options)
   if options.prompt == nil then
     error("Usage: table (even empty) required -> run({})")
     return
@@ -78,32 +82,32 @@ Mcompit.run = function(options)
   end
 end
 
-Mcompit.kill = function()
+local function kill()
     vim.cmd.AsyncStop()
 end
 
-Mcompit.clear_cache = function()
+local function clear_cache()
   vim.cmd('!rm ' .. path .. '*')
 end
 
-Mcompit.init = function()
-   local ok, err, code = os.rename(path, path)
-   if not ok and code ~= 13 then
-     vim.cmd('silent !mkdir -p ' .. path)
-   end
-   return ok, err
+local function init(options)
+  if options.path ~= nil then
+    path = options.path
+  end
+  local ok, err, code = os.rename(path, path)
+  if not ok and code ~= 13 then
+    vim.cmd('silent !mkdir -p ' .. path)
+  end
+  user_table = options.specials
+  return ok, err
 end
 
-vim.keymap.set("n", "<localleader>bp",
-  function() Mcompit.run({ prompt = true }) end, { desc = "[B]uild with [P]rompt" })
+M = {
+  init = init,
+  run = run,
+  kill = kill,
+  clear_cache = clear_cache,
+  set_command = set_command
+}
 
-vim.keymap.set("n", "<localleader>bb",
-  function() Mcompit.run({ prompt = false }) end, { desc = "[B]uild" })
-
-vim.keymap.set("n", "<localleader>bk",
-  function() Mcompit.kill() end, { desc = "[K]ill" })
-
-vim.keymap.set("n", "<localleader>bcc",
-  function() Mcompit.clear_cache() end, { desc = "[C]lear [C]ache" })
-
-return Mcompit
+return M
