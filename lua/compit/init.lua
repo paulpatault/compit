@@ -21,7 +21,7 @@ end
 
 local function get_command()
     local file = get_file();
-    local e = vim.fn.fnamemodify(file, ":e")
+    local e = vim.fn.fnamemodify(vim.fn.expand('%'), ":e")
     for k, v in pairs(user_table) do
       if k == e then
         return v
