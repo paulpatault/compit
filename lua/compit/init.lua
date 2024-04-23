@@ -90,20 +90,22 @@ local function clear_cache()
   vim.cmd('!rm ' .. path .. '*')
 end
 
-local function init(options)
-  if options.path ~= nil then
-    path = options.path
+local function setup(options)
+  if options ~= nil then
+    if options.path ~= nil then
+      path = options.path
+    end
+    user_table = options.specials
   end
   local ok, err, code = os.rename(path, path)
   if not ok and code ~= 13 then
     vim.cmd('silent !mkdir -p ' .. path)
   end
-  user_table = options.specials
   return ok, err
 end
 
 M = {
-  init = init,
+  setup = setup,
   run = run,
   kill = kill,
   clear_cache = clear_cache,
