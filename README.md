@@ -47,10 +47,7 @@ Lazy:
 ```lua
 return {
   "paulpatault/compit",
-  config = function()
-    require('compit').init(
-      { specials = { ext1 = "specific command", ... }
-      }) end,
+  opts = { specials = { ext1 = "specific command", ... } },
   dependencies = "skywind3000/asyncrun.vim"
 }
 ```
