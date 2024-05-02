@@ -47,9 +47,18 @@ Lazy:
 ```lua
 return {
   "paulpatault/compit",
-  opts = { specials = { ext1 = "specific command", ... } },
+  opts = { specials = { ext1 = "specific command", ... },
+           qf_height = 6 },
   dependencies = "skywind3000/asyncrun.vim"
 }
+```
+
+The field `opts` is an optional table of options.
+You can give to have an default command for some filetypes, 
+and set the height of the QuickFixList which is automatically opened.
+```lua
+  opts = { specials = { cpp = "g++ % -o %:t:r" },
+           qf_height = 6 },
 ```
 
 You may want to add this autocommand to open the QuickFixList with the *botright* option.

@@ -11,6 +11,7 @@ local function file_exists(name)
 end
 
 local path = '$HOME/.local/share/nvim/compit_cache/'
+local qf_height = 8
 
 local user_table = {}
 
@@ -90,10 +91,20 @@ local function clear_cache()
   vim.cmd('!rm ' .. path .. '*')
 end
 
+local function auto_cmd()
+  vim.api.nvim_create_autocmd({"User"},
+    { pattern = "AsyncRunStart",
+      command = "call asyncrun#quickfix_toggle(" .. qf_height .. ", 1)",
+      group = vim.api.nvim_create_augroup("CompitGroup", {clear = true}) })
+end
+
 local function setup(options)
   if options ~= nil then
     if options.path ~= nil then
       path = options.path
+    end
+    if options.qf_height ~= nil then
+      qf_height = options.qf_height
     end
     user_table = options.specials
   end
@@ -101,6 +112,7 @@ local function setup(options)
   if not ok and code ~= 13 then
     vim.cmd('silent !mkdir -p ' .. path)
   end
+  auto_cmd()
   return ok, err
 end
 

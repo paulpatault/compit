@@ -50,10 +50,3 @@ vim.api.nvim_create_user_command(
 )
 
 -------------------------------------------------------------------------------
-
-vim.api.nvim_create_autocmd({"User"},
-  { pattern = "AsyncRunStart",
-    command = "call asyncrun#quickfix_toggle(8, 1)",
-    group = vim.api.nvim_create_augroup("CompitGroup", {clear = true}) })
-
--------------------------------------------------------------------------------
