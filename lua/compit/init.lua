@@ -106,7 +106,9 @@ local function setup(options)
     if options.qf_height ~= nil then
       qf_height = options.qf_height
     end
-    user_table = options.specials
+    if options.specials ~= nil then
+      user_table = options.specials
+    end
   end
   local ok, err, code = os.rename(path, path)
   if not ok and code ~= 13 then
