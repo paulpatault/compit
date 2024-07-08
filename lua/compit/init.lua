@@ -12,11 +12,15 @@ end
 
 local path = '$HOME/.local/share/nvim/compit_cache/'
 local qf_height = 8
+local by_file = false
 
 local user_table = {}
 
 local function get_file()
   local b = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+  if by_file then
+    b = b .. vim.fn.expand('%')
+  end
   return vim.fs.normalize(path .. b);
 end
 
@@ -108,6 +112,9 @@ local function setup(options)
     end
     if options.specials ~= nil then
       user_table = options.specials
+    end
+    if options.by_file ~= nil then
+      by_file = options.by_file
     end
   end
   local ok, err, code = os.rename(path, path)
